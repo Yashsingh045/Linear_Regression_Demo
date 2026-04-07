@@ -87,6 +87,13 @@ if 'm_manual' not in st.session_state:
 if 'b_manual' not in st.session_state:
     st.session_state.b_manual = float(round(b_opt, 2))
 
+# --- Main Page Header ---
+st.title("📈 Linear Regression: Visual Deep Dive")
+st.markdown("""
+How does Linear Regression actually learn? This interactive tool helps you visualize how a model fits data, 
+minimizes Mean Squared Error (MSE), and converges to an optimal solution using **Gradient Descent**.
+""")
+
 # --- Main App Tabs ---
 tabs = st.tabs([
     "📍 Data & Fit", 
@@ -107,22 +114,22 @@ with tabs[0]:
     
     col1, col2 = st.columns([1, 3])
     
-    with col1:
-        st.subheader("Manual Layout")
+    # Callback for the button to avoid state modification errors
+    def snap_callback():
+        st.session_state.m_manual = float(round(m_opt, 2))
+        st.session_state.b_manual = float(round(b_opt, 2))
+
     with col1:
         st.subheader("Manual Layout")
         # Direct slider binding to session_state
         st.slider("Manual Slope (m)", -2.0, 6.0, key="m_manual")
         st.slider("Manual Intercept (b)", -10.0, 10.0, key="b_manual")
         
-        # Access the values from session_state
+        # Access values for calculations
         m_manual = st.session_state.m_manual
         b_manual = st.session_state.b_manual
 
-        if st.button("🎯 Snap to Best Fit"):
-            st.session_state.m_manual = float(round(m_opt, 2))
-            st.session_state.b_manual = float(round(b_opt, 2))
-            st.rerun()
+        st.button("🎯 Snap to Best Fit", on_click=snap_callback)
 
         y_pred_manual = m_manual * X + b_manual
         current_mse = compute_mse(y, y_pred_manual)
